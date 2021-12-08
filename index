@@ -1,0 +1,154 @@
+from tkinter import *
+import sqlite3,sys
+
+def connection():
+    try:
+        conn=sqlite3.connect("aluno.db")
+    except:
+        print("cannot connect to the database")
+    return conn    
+
+
+def verifier():
+    a=b=c=d=e=f=0
+    if not aluno.get():
+        t1.insert(END,"<>Aluno is required<>\n")
+        a=1
+    if not classe.get():
+        t1.insert(END,"<>Classe is required<>\n")
+        b=1
+    if not turno.get():
+        t1.insert(END,"<>Turno is required<>\n")
+        c=1
+    if not cel.get():
+        t1.insert(END,"<>Cel is requrired<>\n")
+        d=1
+    if not responsavel.get():
+        t1.insert(END,"<>Responsavel is required<>\n")
+        e=1
+    if not endereço.get():
+        t1.insert(END,"<>Endereço is Required<>\n")
+        f=1
+    if a==1 or b==1 or c==1 or d==1 or e==1 or f==1:
+        return 1
+    else:
+        return 0
+
+
+def add_aluno():
+            ret=verifier()
+            if ret==0:
+                conn=connection()
+                cur=conn.cursor()
+                cur.execute("CREATE TABLE IF NOT EXISTS ALUNO(NOME TEXT,CLASSE INTEGER,TURNO TEXT,PHONE INTEGER,RESPONSAVEL TEXT,ENDEREÇO TEXT)")
+                cur.execute("insert into ALUNO values(?,?,?,?,?,?)",(aluno.get(),int(classe.get()),turno.get(),int(cel.get()),responsavel.get(),endereço.get()))
+                conn.commit()
+                conn.close()
+                t1.insert(END,"ADDED SUCCESSFULLY\n")
+
+
+def view_aluno():
+    conn=connection()
+    cur=conn.cursor()
+    cur.execute("select * from ALUNO")
+    data=cur.fetchall()
+    conn.close()
+    for i in data:
+        t1.insert(END,str(i)+"\n")
+
+
+def delete_aluno():
+    ret=verifier()
+    if ret==0:
+        conn=connection()
+        cur=conn.cursor()
+        cur.execute("DELETE FROM ALUNO WHERE CLASSE=?",(int(classe.get()),))
+        conn.commit()
+        conn.close()
+        t1.insert(END,"SUCCESSFULLY DELETED THE USER\n")
+
+def update_aluno():
+    ret=verifier()
+    if ret==0:
+        conn=connection()
+        cur=conn.cursor()
+        cur.execute("UPDATE ALUNO SET NOME=?,CLASSE=?,TURNO=?,CEL=?,RESPONSAVEL=?,ENDEREÇO=? where CLASSE_=?",(aluno.get(),int(classe.get()),turno.get(),int(cel.get()),responsavel.get(),endereço.get(),int(classe.get())))
+        conn.commit()
+        conn.close()
+        t1.insert(END,"UPDATED SUCCESSFULLY\n")
+
+
+def clse():
+    sys.exit() 
+
+
+if __name__=="__main__":
+    root=Tk()
+    root.title("Sistema de Informaçoes de Aluno")
+     
+    aluno=StringVar()
+    classe=StringVar()
+    turno=StringVar()
+    cel=StringVar()
+    responsavel=StringVar()
+    endereço=StringVar()
+    
+    label1=Label(root,text="Aluno:")
+    label1.place(x=0,y=0)
+
+    label2=Label(root,text="Classe:")
+    label2.place(x=0,y=30)
+
+    label3=Label(root,text="Turno:")
+    label3.place(x=0,y=60)
+
+    label4=Label(root,text="Cel:")
+    label4.place(x=0,y=90)
+
+    label5=Label(root,text="Responsavel:")
+    label5.place(x=0,y=120)
+
+    label6=Label(root,text="Endereço:")
+    label6.place(x=0,y=150)
+
+    e1=Entry(root,textvariable=aluno)
+    e1.place(x=100,y=0)
+
+    e2=Entry(root,textvariable=classe)
+    e2.place(x=100,y=30)
+
+    e3=Entry(root,textvariable=turno)
+    e3.place(x=100,y=60)
+
+    e4=Entry(root,textvariable=cel)
+    e4.place(x=100,y=90)
+    
+    e5=Entry(root,textvariable=responsavel)
+    e5.place(x=100,y=120)
+
+    e6=Entry(root,textvariable=endereço)
+    e6.place(x=100,y=150)
+    
+    t1=Text(root,width=80,height=20)
+    t1.grid(row=10,column=1)
+   
+
+
+    b1=Button(root,text="ADIC. ALUNO",command=add_aluno,width=40)
+    b1.grid(row=11,column=0)
+
+    b2=Button(root,text="VER ALUNO",command=view_aluno,width=40)
+    b2.grid(row=12,column=0)
+
+    b3=Button(root,text="REMOVER ALUNO",command=delete_aluno,width=40)
+    b3.grid(row=13,column=0)
+
+    b4=Button(root,text="ATUALIZAR INFO",command=update_aluno,width=40)
+    b4.grid(row=14,column=0)
+
+    b5=Button(root,text="FECHAR",command=clse,width=40)
+    b5.grid(row=15,column=0)
+
+
+    root.mainloop()
+    
